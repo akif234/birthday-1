@@ -85,47 +85,52 @@
         <input id="name" placeholder="Nama" required>
         <input id="phone" placeholder="Phone" required>
         <textarea id="warna" placeholder="Warna" required></textarea>
-        <button onclick="submitForm()">Submit</button>
+        <button id="submitBtn">Submit</button>
         <p id="status"></p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         // 🔹 Ganti dengan info Supabase kau
-        const supabaseUrl = "https://hsankpxjtwqbbsbcuuhh.supabase.co"
-        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYW5rcHhqdHdxYmJzYmN1dWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NTUzMTIsImV4cCI6MjA4NzQzMTMxMn0.xOeR33CJr5Vt_0pWsn7qPcvPt4srpTsuNYKb1qwLDZk"
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+        const supabaseUrl = "https://hsankpxjtwqbbsbcuuhh.supabase.co";
+        const supabaseKey = "PASTE_ANON_KEY_HERE";
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        async function submitForm() {
-            const statusEl = document.getElementById("status")
-            const name = document.getElementById("name").value.trim()
-            const phone = document.getElementById("phone").value.trim()
-            const warna = document.getElementById("warna").value.trim()
+        const submitBtn = document.getElementById("submitBtn");
+        const statusEl = document.getElementById("status");
+
+        submitBtn.addEventListener("click", async () => {
+            const name = document.getElementById("name").value.trim();
+            const phone = document.getElementById("phone").value.trim();
+            const warna = document.getElementById("warna").value.trim();
 
             if (!name || !phone || !warna) {
-                statusEl.textContent = "Semua field diperlukan!"
-                statusEl.className = "error"
-                return
+                statusEl.textContent = "Semua field diperlukan!";
+                statusEl.className = "error";
+                return;
             }
 
-            const { data, error } = await supabase
-                .from("submissions") // tukar ikut table Supabase kau
-                .insert([{ name, phone, warna }])
+            try {
+                const { data, error } = await supabase
+                    .from("submissions") // pastikan table name sama
+                    .insert([{ name, phone, warna }]);
 
-            if (error) {
-                statusEl.textContent = "Error: " + error.message
-                statusEl.className = "error"
-                console.error(error)
-            } else {
-                statusEl.textContent = "Submitted successfully!"
-                statusEl.className = "success"
+                if (error) throw error;
+
+                statusEl.textContent = "Submitted successfully!";
+                statusEl.className = "success";
 
                 // Clear form
-                document.getElementById("name").value = ""
-                document.getElementById("phone").value = ""
-                document.getElementById("warna").value = ""
+                document.getElementById("name").value = "";
+                document.getElementById("phone").value = "";
+                document.getElementById("warna").value = "";
+
+            } catch (err) {
+                statusEl.textContent = "Error: " + err.message;
+                statusEl.className = "error";
+                console.error(err);
             }
-        }
+        });
     </script>
 
 </body>
