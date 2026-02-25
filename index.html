@@ -89,48 +89,30 @@
         <p id="status"></p>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // 🔹 Ganti dengan info Supabase kau
-        const supabaseUrl = "https://hsankpxjtwqbbsbcuuhh.supabase.co";
-        const supabaseKey = "PASTE_ANON_KEY_HERE";
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    <script type="module">
+        import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
 
-        const submitBtn = document.getElementById("submitBtn");
-        const statusEl = document.getElementById("status");
+        const supabase = createClient(
+            "https://hsankpxjtwqbbsbcuuhh.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzYW5rcHhqdHdxYmJzYmN1dWhoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NTUzMTIsImV4cCI6MjA4NzQzMTMxMn0.xOeR33CJr5Vt_0pWsn7qPcvPt4srpTsuNYKb1qwLDZk"
+        )
 
-        submitBtn.addEventListener("click", async () => {
-            const name = document.getElementById("name").value.trim();
-            const phone = document.getElementById("phone").value.trim();
-            const warna = document.getElementById("warna").value.trim();
+        window.submitForm = async () => {
+            const name = document.getElementById("name").value
+            const phone = document.getElementById("phone").value
+            const warna = document.getElementById("warna").value
 
-            if (!name || !phone || !warna) {
-                statusEl.textContent = "Semua field diperlukan!";
-                statusEl.className = "error";
-                return;
+            const { error } = await supabase
+                .from("submissions")
+                .insert([{ name, phone, warna }])
+
+            if (error) {
+                alert(error.message)
+                console.error(error)
+            } else {
+                alert("Submitted!")
             }
-
-            try {
-                const { data, error } = await supabase
-                    .from("submissions") // pastikan table name sama
-                    .insert([{ name, phone, warna }]);
-
-                if (error) throw error;
-
-                statusEl.textContent = "Submitted successfully!";
-                statusEl.className = "success";
-
-                // Clear form
-                document.getElementById("name").value = "";
-                document.getElementById("phone").value = "";
-                document.getElementById("warna").value = "";
-
-            } catch (err) {
-                statusEl.textContent = "Error: " + err.message;
-                statusEl.className = "error";
-                console.error(err);
-            }
-        });
+        }
     </script>
 
 </body>
